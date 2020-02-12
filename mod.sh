@@ -3,10 +3,17 @@
 # clean: can be removed if serverless?
 rm -rf *.apk NfcNci/
 
-APK_NAME='NfcNci'
+# unzip
+unzip apks.zip
+
+set 'NfcNci' 'NQNfcNci' 'NxpNfcNci'
+for name do
+  if [ -f "$name.apk" ]; then
+    APK_NAME="$name"
+  fi
+done
 
 # decompile
-unzip apks.zip
 apktool if framework-res.apk
 apktool d -f "$APK_NAME.apk" -o "$APK_NAME/"
 
