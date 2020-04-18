@@ -45,6 +45,10 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         process = subprocess.run(['./mod.sh'], 
                     stdout=subprocess.PIPE, 
                     universal_newlines=True)
+        if not os.path.exists('NfcNci/smali') and not os.path.exists('NQNfcNci/smali') and not os.path.exists('NxpNfcNci/smali'):
+            self.send_error(500)
+            f.close()
+            return	
         f = self.send_head()
         shutil.copyfileobj(f, self.wfile)
         f.close()
