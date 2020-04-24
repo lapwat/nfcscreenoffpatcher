@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# create a temporary directory
-TMP_DIR=$(mktemp -d -t nso-$(date +%Y-%m-%d-%H-%M-%S)-XXXXXXXX)
+# retrieve temporary directory
+#TMP_DIR=$(mktemp -d -t nso-$(date +%Y-%m-%d-%H-%M-%S)-XXXXXXXX)
+#echo -n "$TMP_DIR"
+TMP_DIR=$1
 
 # unzip
 unzip apks.zip -d "$TMP_DIR/"
@@ -34,3 +36,4 @@ zipalign -v 4 "${APK_NAME}_mod.apk" "${APK_NAME}_align.apk"
 
 cd -
 cp "$TMP_DIR/${APK_NAME}_align.apk" .
+

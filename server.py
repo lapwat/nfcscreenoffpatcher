@@ -30,25 +30,30 @@ import random
 from io import BytesIO
 
 from pathlib import Path
-import subprocess
+from subprocess import check_output
 
 alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 r = random.SystemRandom()
 
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     server_version = "SimpleHTTPWithUpload/" + __version__
-    tmp_dir = ''.join([r.choice(alphabet) for _ in range(24)])
+    #tmp_dir = ''.join([r.choice(alphabet) for _ in range(24)])
 
     def do_POST(self):
         r, info = self.deal_post_data()
         print((r, info, "by: ", self.client_address))
-        process = subprocess.run(['./mod.sh'], 
-                    stdout=subprocess.PIPE, 
-                    universal_newlines=True)
-        if not os.path.exists('NfcNci/smali') and not os.path.exists('NQNfcNci/smali') and not os.path.exists('NxpNfcNci/smali'):
+
+        # moding in tmp directory
+        tmp_dir = check_output(['mktemp', '-d', '-t', 'nso-XXXXXXXX']).decode().strip()
+        check_output(['./mod.sh', tmp_dir])
+
+        # checking that apk has been successfully disassembled
+        if not os.path.exists(f'{tmp_dir}/NfcNci/smali') and not os.path.exists(f'{tmp_dir}/NQNfcNci/smali') and not os.path.exists(f'{tmp_dir}/NxpNfcNci/smali'):
             self.send_error(500)
             f.close()
             return	
+
+        # write aligned apk in response
         f = self.send_head()
         shutil.copyfileobj(f, self.wfile)
         f.close()
