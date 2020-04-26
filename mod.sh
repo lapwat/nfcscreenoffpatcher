@@ -35,5 +35,5 @@ apktool b -f "$APK_NAME/" -o "${APK_NAME}_mod.apk"
 zipalign -v 4 "${APK_NAME}_mod.apk" "${APK_NAME}_align.apk"
 
 cd -
-cp "$TMP_DIR/${APK_NAME}_align.apk" .
+cp "$TMP_DIR/${APK_NAME}_align.apk" out.apk 
 

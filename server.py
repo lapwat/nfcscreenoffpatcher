@@ -102,7 +102,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         return (True, "File '%s' upload success!" % ",".join(uploaded_files))
  
     def send_head(self):
-        f = open(f'NfcNci_align.apk', 'rb')
+        f = open(f'out.apk', 'rb')
         self.send_response(200)
         self.send_header("Content-type", 'application/zip')
         fs = os.fstat(f.fileno())
