@@ -1,4 +1,7 @@
 #!/bin/sh
+EXTRACT_DIR=$1
+APK_NAME=$2
+
 cd "$EXTRACT_DIR/"
 
 # decompile

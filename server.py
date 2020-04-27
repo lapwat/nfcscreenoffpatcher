@@ -17,7 +17,7 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
       archive.extractall(extract_dir)
     
     # mod
-    subprocess.run(['./mod.sh'], env={ 'EXTRACT_DIR': extract_dir, 'APK_NAME': apk_name })
+    subprocess.run(['./mod.sh', extract_dir, apk_name])
 
     # check that apk has been successfully disassembled
     if not os.path.exists(f'{extract_dir}/{apk_name}/smali'):
