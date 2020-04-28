@@ -20,3 +20,6 @@ apktool b -f "$APK_NAME/" -o "${APK_NAME}_mod.apk"
 # keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000
 # jarsigner -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore ~/.android/debug.keystore -storepass android "${APK_NAME}_mod.apk" androiddebugkey
 zipalign -v 4 "${APK_NAME}_mod.apk" "${APK_NAME}_align.apk"
+
+# clean
+ls | grep -v "${APK_NAME}_align.apk" | xargs rm -r
