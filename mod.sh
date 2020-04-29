@@ -24,4 +24,4 @@ apktool b -f "$APK_NAME/" -o "${APK_NAME}_mod.apk"
 zipalign -v 4 "${APK_NAME}_mod.apk" "${APK_NAME}_align.apk"
 
 # clean
-ls | grep -v "${APK_NAME}_align.apk" | xargs rm -r
+#ls | grep -v "${APK_NAME}_align.apk" | xargs rm -r
