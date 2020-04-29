@@ -37,7 +37,9 @@ RUN chmod a+x /dedroid/apktool
 ENV PATH=/dedroid/:$PATH
 
 WORKDIR /app/
-ADD server.py mod.sh ./
+ADD server.py requirements.txt mod.sh ./
+RUN apk add py-pip
+RUN pip3 install -r requirements.txt
 CMD ["python3", "server.py"]
 # FROM openjdk:8-alpine
 # MAINTAINER lapwat
