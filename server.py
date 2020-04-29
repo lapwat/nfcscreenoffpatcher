@@ -2,6 +2,8 @@ import os, subprocess, zipfile
 import http.server as server
 from datetime import datetime
 
+from dotenv import dotenv_values
+
 class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
   def do_PUT(self):
     # save archive
@@ -12,9 +14,12 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
         output_file.write(self.rfile.read(file_length))
 
     # unzip
-    extract_dir = f'/data/{int(datetime.timestamp(datetime.now()))}'
+    timestamp = int(datetime.timestamp(datetime.now()))
+    extract_dir = f'/data/{timestamp}'
     with zipfile.ZipFile(filename) as archive:
       archive.extractall(extract_dir)
+    rom = dotenv_values(f'{extract_dir}/.env').get('ROM')
+    os.rename(extract_dir, f'/data/{rom}{timestamp}')
     
     # mod
     subprocess.run(['./mod.sh', extract_dir, apk_name])
