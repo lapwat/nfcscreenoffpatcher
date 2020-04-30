@@ -15,11 +15,12 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
 
     # unzip
     timestamp = int(datetime.timestamp(datetime.now()))
-    extract_dir = f'/data/{timestamp}'
+    tmp_dir = f'/data/{timestamp}'
     with zipfile.ZipFile(filename) as archive:
-      archive.extractall(extract_dir)
-    rom = dotenv_values(f'{extract_dir}/.env').get('ROM')
-    os.rename(extract_dir, f'/data/{rom}{timestamp}')
+      archive.extractall(tmp_dir)
+    rom = dotenv_values(f'{tmp_dir}/.env').get('ROM')
+    extract_dir = f'/data/{rom}-{timestamp}'
+    os.rename(tmp_dir, extract_dir) 
     
     # mod
     subprocess.run(['./mod.sh', extract_dir, apk_name])
