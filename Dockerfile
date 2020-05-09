@@ -41,7 +41,7 @@ ADD requirements.txt .
 RUN apk add py-pip
 RUN pip3 install -r requirements.txt
 
-ADD server.py mod.sh ./
+ADD server.py patcher.py disassemble.sh assemble.sh ./
 CMD ["python3", "server.py"]
 # FROM openjdk:8-alpine
 # MAINTAINER lapwat

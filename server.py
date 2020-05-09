@@ -4,6 +4,8 @@ from datetime import datetime
 
 from dotenv import dotenv_values
 
+from patcher import Patcher
+
 class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
   def do_PUT(self):
     # save archive
@@ -23,7 +25,11 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
     os.rename(tmp_dir, extract_dir) 
     
     # mod
-    subprocess.run(['./mod.sh', extract_dir, apk_name])
+    subprocess.run(['./disassemble.sh', extract_dir, apk_name])
+    patcher = Patcher(extract_dir)
+    patcher.patch_ScreenStateHelper()
+    patcher.patch_NfcService()
+    subprocess.run(['./assemble.sh', extract_dir, apk_name])
 
     # check that apk has been successfully disassembled
     if not os.path.exists(f'{extract_dir}/{apk_name}/smali'):
