@@ -32,7 +32,8 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
     subprocess.run(['./assemble.sh', extract_dir, apk_name])
 
     # check that apk has been successfully disassembled
-    if not os.path.exists(f'{extract_dir}/{apk_name}/smali'):
+    if not patcher.is_successfully_disassembled():
+      os.rename(extract_dir, f'/data/fail-{rom}-{timestamp}')
       self.send_error(500)
       return
 
@@ -44,5 +45,7 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
       self.send_header("Content-Length", str(fs[6]))
       self.end_headers()
       self.wfile.write(apk.read())
+
+    patcher.clean()
 
 server.test(HandlerClass=HTTPRequestHandler)
