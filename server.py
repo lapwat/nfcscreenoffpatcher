@@ -20,22 +20,28 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
     tmp_dir = f'/data/{timestamp}'
     with zipfile.ZipFile(filename) as archive:
       archive.extractall(tmp_dir)
-    rom = dotenv_values(f'{tmp_dir}/.env').get('ROM')
-    extract_dir = f'/data/{rom}-{timestamp}'
+    env = dotenv_values(f'{tmp_dir}/.env')
+    manufacturer = env.get('MANUFACTURER').replace(' ', '')
+    model = env.get('MODEL').replace(' ', '')
+    extract_dir = f'/data/{manufacturer}-{model}-{timestamp}'
     os.rename(tmp_dir, extract_dir) 
     
-    # mod
-    subprocess.run(['./disassemble.sh', extract_dir, apk_name])
+    # disassemble
     patcher = Patcher(extract_dir)
-    patcher.patch_ScreenStateHelper()
-    patcher.patch_NfcService()
-    subprocess.run(['./assemble.sh', extract_dir, apk_name])
+    subprocess.run(['./disassemble.sh', extract_dir, apk_name])
 
     # check that apk has been successfully disassembled
     if not patcher.is_successfully_disassembled():
-      os.rename(extract_dir, f'/data/fail-{rom}-{timestamp}')
+      os.rename(extract_dir, f'/data/fail-{manufacturer}-{model}-{timestamp}')
       self.send_error(500)
       return
+
+    # patch
+    patcher.patch_ScreenStateHelper()
+    patcher.patch_NfcService()
+
+    # assemble
+    subprocess.run(['./assemble.sh', extract_dir, apk_name])
 
     # write aligned apk in response
     self.send_response(200)
