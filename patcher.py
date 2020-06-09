@@ -4,7 +4,13 @@ from dotenv import dotenv_values
 class Patcher:
   def __init__(self, extract_dir):
     self.extract_dir = extract_dir
-    self.apk_name = dotenv_values(f'{extract_dir}/.env')['APK_NAME']
+
+    env = dotenv_values(f'{self.extract_dir}/.env')
+    self.manufacturer = env.get('MANUFACTURER')
+    self.model = env.get('MODEL')
+    self.rom = env.get('ROM')
+    self.apk_name = env.get('APK_NAME')
+    self.on_unlocked_value = None
 
   def is_successfully_disassembled(self):
     return os.path.exists(f'{self.extract_dir}/{self.apk_name}/smali')
@@ -15,7 +21,9 @@ class Patcher:
     os.remove(f'{self.extract_dir}/{self.apk_name}_mod.apk')
     shutil.rmtree(f'{self.extract_dir}/{self.apk_name}')
 
-    os.rename(self.extract_dir, f'{self.extract_dir}-{self.on_unlocked_value}')
+  def log_stats(self):
+    with open('/data/stats.csv', 'a') as fd:
+      fd.write(f'{os.path.basename(self.extract_dir)},{self.manufacturer},{self.model},{self.rom},{self.apk_name},{self.on_unlocked_value}\n')
 
   def patch_ScreenStateHelper(self):
     path = f'{self.extract_dir}/{self.apk_name}/smali/com/android/nfc/ScreenStateHelper.smali'
