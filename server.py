@@ -1,4 +1,4 @@
-import os, subprocess, zipfile
+import os, zipfile
 import http.server as server
 from datetime import datetime
 
@@ -8,7 +8,6 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
   def do_PUT(self):
     # save archive
     filename = os.path.basename(self.path)
-    apk_name = os.path.splitext(filename)[0]
     file_length = int(self.headers['Content-Length'])
     with open(filename, 'wb') as output_file:
         output_file.write(self.rfile.read(file_length))
@@ -19,11 +18,9 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
     with zipfile.ZipFile(filename) as archive:
       archive.extractall(extract_dir)
 
-    patcher = Patcher(extract_dir)
-    apk_name = patcher.apk_name
-    
     # disassemble
-    subprocess.run(['./disassemble.sh', extract_dir, apk_name])
+    patcher = Patcher(extract_dir)
+    patcher.disassemble()
 
     # check that apk has been successfully disassembled
     if not patcher.is_successfully_disassembled():
@@ -37,13 +34,11 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
     # patch
     patcher.patch_ScreenStateHelper()
     patcher.patch_NfcService()
-
-    # assemble
-    subprocess.run(['./assemble.sh', extract_dir, apk_name])
+    patcher.assemble()
 
     # write aligned apk in response
     self.send_response(200)
-    with open(f'{extract_dir}/{apk_name}_align.apk', 'rb') as apk:
+    with open(f'{extract_dir}/{patcher.apk_name}_align.apk', 'rb') as apk:
       self.send_header("Content-Type", 'application/vnd.android.package-archive')
       fs = os.fstat(apk.fileno())
       self.send_header("Content-Length", str(fs[6]))

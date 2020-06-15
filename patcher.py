@@ -1,4 +1,4 @@
-import os, shutil
+import os, shutil, subprocess
 from dotenv import dotenv_values
 
 class Patcher:
@@ -12,8 +12,22 @@ class Patcher:
     self.apk_name = env.get('APK_NAME')
     self.on_unlocked_value = None
 
+  def disassemble(self):
+    subprocess.run(['./disassemble.sh', self.extract_dir, self.apk_name])
+    self.smali_folder = self.find_smali_folder()
+
+  def assemble(self):
+    subprocess.run(['./assemble.sh', self.extract_dir, self.apk_name])
+
+  def find_smali_folder(self):
+    possible_folders = ['smali', 'smali_classes2']
+    for folder in possible_folders:
+      if os.path.exists(f'{self.extract_dir}/{self.apk_name}/{folder}/com'):
+        return folder
+    return None
+
   def is_successfully_disassembled(self):
-    return os.path.exists(f'{self.extract_dir}/{self.apk_name}/smali')
+    return self.smali_folder is not None
 
   def clean(self):
     os.remove(f'{self.extract_dir}/framework-res.apk')
@@ -23,10 +37,10 @@ class Patcher:
 
   def log_stats(self):
     with open('/data/stats.csv', 'a') as fd:
-      fd.write(f'{os.path.basename(self.extract_dir)},{self.manufacturer},{self.model},{self.rom},{self.apk_name},{self.on_unlocked_value}\n')
+      fd.write(f'{os.path.basename(self.extract_dir)},{self.manufacturer},{self.model},{self.rom},{self.apk_name},{self.on_unlocked_value},{self.smali_folder}\n')
 
   def patch_ScreenStateHelper(self):
-    path = f'{self.extract_dir}/{self.apk_name}/smali/com/android/nfc/ScreenStateHelper.smali'
+    path = f'{self.extract_dir}/{self.apk_name}/{self.smali_folder}/com/android/nfc/ScreenStateHelper.smali'
     with open(path) as fd:
       lines = fd.readlines()
       for i, line in enumerate(lines):
@@ -41,7 +55,7 @@ class Patcher:
       fd.writelines(lines)
 
   def patch_NfcService(self):
-    path = f'{self.extract_dir}/{self.apk_name}/smali/com/android/nfc/NfcService.smali'
+    path = f'{self.extract_dir}/{self.apk_name}/{self.smali_folder}/com/android/nfc/NfcService.smali'
     with open(path) as fd:
       lines = fd.readlines()
       for i, line in enumerate(lines):
