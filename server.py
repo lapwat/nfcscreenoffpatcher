@@ -19,7 +19,7 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
       archive.extractall(extract_dir)
 
     # disassemble
-    patcher = Patcher(extract_dir)
+    patcher = Patcher.factory(extract_dir)
     patcher.disassemble()
 
     # check that apk has been successfully disassembled
