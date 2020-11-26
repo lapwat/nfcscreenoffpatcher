@@ -37,4 +37,5 @@ ADD server.py patcher.py disassemble.sh assemble.sh disassemble_odex.sh assemble
 RUN wget -O baksmali.jar https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.4.0.jar
 RUN wget -O smali.jar https://bitbucket.org/JesusFreke/smali/downloads/smali-2.4.0.jar
 
+EXPOSE 8000
 CMD ["python3", "server.py"]
