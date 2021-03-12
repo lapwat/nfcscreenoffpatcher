@@ -81,12 +81,19 @@ class Patcher:
     with open(path) as fd:
       lines = fd.readlines()
       for i, line in enumerate(lines):
+        if 'playSound' in line:
+          insert_index = i + 2
+
         line = line.replace('SCREEN_OFF', 'SCREEN_OFF_DISABLED')
         line = line.replace('SCREEN_ON', 'SCREEN_ON_DISABLED')
         line = line.replace('USER_PRESENT', 'USER_PRESENT_DISABLED')
         line = line.replace('USER_SWITCHED', 'USER_SWITCHED_DISABLED')
         lines[i] = line
-    
+
+      # patch sound
+      if insert_index:
+        lines = lines[:insert_index] + ['return-void\n'] + lines[insert_index:]
+
     with open(path, 'w') as fd:
       fd.writelines(lines)
 
