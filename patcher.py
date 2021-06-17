@@ -38,8 +38,6 @@ class Patcher:
     subprocess.run(['./assemble.sh', self.extract_dir, self.apk_name])
 
   def get_smali_dir(self):
-    if self.smali_dir: return self.smali_dir
-
     possible_folders = ['smali', 'smali_classes2']
     for folder in possible_folders:
       path = f'{self.extract_dir}/{self.apk_name}/{folder}'
@@ -52,14 +50,20 @@ class Patcher:
     return self.smali_dir is not None
 
   def clean(self):
-    os.remove(f'{self.extract_dir}/framework-res.apk')
-    os.remove(f'{self.extract_dir}/{self.apk_name}.apk')
-    os.remove(f'{self.extract_dir}/{self.apk_name}_mod.apk')
-    shutil.rmtree(f'{self.extract_dir}/{self.apk_name}')
+    # os.remove(f'{self.extract_dir}/framework-res.apk')
+    # os.remove(f'{self.extract_dir}/{self.apk_name}.apk')
+    # os.remove(f'{self.extract_dir}/{self.apk_name}_mod.apk')
+    # shutil.rmtree(f'{self.extract_dir}/{self.apk_name}')
+    shutil.rmtree(f'{self.extract_dir}')
 
-  def log_stats(self):
-    with open('/data/stats.csv', 'a') as fd:
-      fd.write(f'{os.path.basename(self.extract_dir)},{self.manufacturer},{self.model},{self.rom},{self.apk_name},{self.on_unlocked_value},{os.path.basename(self.smali_dir)},{self.device},{self.strategy}\n')
+  def log_stats(self, status='success'):
+    # write headers
+    if not os.path.exists('data/stats.csv'):
+      with open('data/stats.csv', 'a') as fd:
+        fd.write('"timestamp","manufacturer","model","rom","apk_name","on_unlocked_value","smali_dir","device","strategy","status"\n')
+
+    with open('data/stats.csv', 'a') as fd:
+      fd.write(f'"{os.path.basename(self.extract_dir)}","{self.manufacturer}","{self.model}","{self.rom}","{self.apk_name}","{self.on_unlocked_value}","{os.path.basename(self.smali_dir)}","{self.device}","{self.strategy}","{status}"\n')
 
   def patch_ScreenStateHelper(self):
     path = f'{self.smali_dir}/com/android/nfc/ScreenStateHelper.smali'
@@ -106,15 +110,15 @@ class PatcherOdex(Patcher):
     subprocess.run(['./assemble_odex.sh', self.extract_dir, self.apk_name])
 
   def get_smali_dir(self):
-    if self.smali_dir: return self.smali_dir
     return f'{self.extract_dir}/{self.apk_name}'
 
-  def clean(self):
-    os.remove(f'{self.extract_dir}/classes.dex')
-    os.remove(f'{self.extract_dir}/{self.apk_name}.odex')
-    os.remove(f'{self.extract_dir}/{self.apk_name}.vdex')
-    os.remove(f'{self.extract_dir}/{self.apk_name}.apk')
-    os.remove(f'{self.extract_dir}/{self.apk_name}_mod.apk')
-    shutil.rmtree(f'{self.extract_dir}/arm64')
-    shutil.rmtree(f'{self.extract_dir}/{self.apk_name}')
+  # def clean(self):
+    # os.remove(f'{self.extract_dir}/classes.dex')
+    # os.remove(f'{self.extract_dir}/{self.apk_name}.odex')
+    # os.remove(f'{self.extract_dir}/{self.apk_name}.vdex')
+    # os.remove(f'{self.extract_dir}/{self.apk_name}.apk')
+    # os.remove(f'{self.extract_dir}/{self.apk_name}_mod.apk')
+    # shutil.rmtree(f'{self.extract_dir}/arm64')
+    # shutil.rmtree(f'{self.extract_dir}/{self.apk_name}')
+    # shutil.rmtree(f'{self.extract_dir}')
 

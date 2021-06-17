@@ -5,6 +5,10 @@ from datetime import datetime
 from patcher import Patcher
 
 class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
+  def do_GET(self):
+    self.path = '/data/stats.csv'
+    return server.SimpleHTTPRequestHandler.do_GET(self)
+
   def do_PUT(self):
     # save archive
     filename = os.path.basename(self.path)
@@ -14,7 +18,7 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
 
     # unzip
     timestamp = int(datetime.timestamp(datetime.now()))
-    extract_dir = f'/data/{timestamp}'
+    extract_dir = f'data/{timestamp}'
     with zipfile.ZipFile(filename) as archive:
       archive.extractall(extract_dir)
 
@@ -26,8 +30,8 @@ class HTTPRequestHandler(server.SimpleHTTPRequestHandler):
     if not patcher.is_successfully_disassembled():
       manufacturer = patcher.manufacturer.replace(' ', '')
       model = patcher.model.replace(' ', '')
-      os.rename(extract_dir, f'/data/fail-{timestamp}-{manufacturer}-{model}')
-      patcher.log_stats()
+      os.rename(extract_dir, f'data/fail-{timestamp}-{manufacturer}-{model}')
+      patcher.log_stats('fail-disassemble')
       self.send_error(500)
       return
 
