@@ -62,7 +62,8 @@ class Patcher:
     with open('data/stats.csv', 'a') as fd:
       ts_str = os.path.basename(self.extract_dir)
       date_iso = datetime.fromtimestamp(int(ts_str)).isoformat()
-      fd.write(f'"{ts_str}","{self.manufacturer}","{self.model}","{self.rom}","{self.apk_name}","{self.on_unlocked_value}","{os.path.basename(self.smali_dir)}","{self.device}","{self.strategy}","{status}","{date_iso}"\n')
+      smali_dir = None if status == 'fail-disassemble' else os.path.basename(self.smali_dir)
+      fd.write(f'"{ts_str}","{self.manufacturer}","{self.model}","{self.rom}","{self.apk_name}","{self.on_unlocked_value}","{smali_dir}","{self.device}","{self.strategy}","{status}","{date_iso}"\n')
 
   def patch_ScreenStateHelper(self):
     path = f'{self.smali_dir}/com/android/nfc/ScreenStateHelper.smali'
@@ -94,8 +95,8 @@ class Patcher:
         lines[i] = line
 
       # patch sound
-      if insert_index:
-        lines = lines[:insert_index] + ['return-void\n'] + lines[insert_index:]
+      #if insert_index:
+      #  lines = lines[:insert_index] + ['return-void\n'] + lines[insert_index:]
 
     with open(path, 'w') as fd:
       fd.writelines(lines)
