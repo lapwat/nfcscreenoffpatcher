@@ -39,7 +39,7 @@ class Patcher:
     subprocess.run(['./assemble.sh', self.extract_dir, self.apk_name])
 
   def get_smali_dir(self):
-    possible_folders = ['smali', 'smali_classes2']
+    possible_folders = ['smali', 'smali_classes1', 'smali_classes2', 'smali_classes3']
     for folder in possible_folders:
       path = f'{self.extract_dir}/{self.apk_name}/{folder}'
       if os.path.exists(f'{path}/com'):
