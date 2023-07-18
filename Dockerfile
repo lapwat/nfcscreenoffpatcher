@@ -14,7 +14,7 @@ RUN unzip -q dex-tools-2.0.zip
 RUN rm dex2jar-2.0/*.bat
 RUN mkdir -p /export/lib/
 #RUN curl -sL https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.6.1.jar > /export/apktool.jar
-COPY apktool-2.6.2-9db742.jar /export/apktool.jar
+COPY apktool_2.8.0.jar /export/apktool.jar
 RUN curl -sL https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool > /export/apktool
 RUN cp -a /sdk/build-tools/26.0.1/apksigner /sdk/build-tools/26.0.1/zipalign /dex2jar-2.0/* /export/
 RUN cp -a /sdk/build-tools/26.0.1/lib/apksigner.jar /export/lib/
